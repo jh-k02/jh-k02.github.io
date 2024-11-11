@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page Redirect</title>
+</head>
+<body>
+  <h2>입력한 URL로 이동하기</h2>
+  
+  <form id="landingForm">
+    <label for="urlInput">이동할 URL을 입력하세요:</label> <br /><br />
+    <input type="text" id="urlInput" placeholder="http://example.com" required> <br /><br />
+    <button type="button" onclick="redirectToLanding()">이동하기</button>
+    <button type="button" onclick="showAndroidTest()">강제랜딩</button>
+  </form>
+
+  <script>
+    function redirectToLanding() {
+      const urlInput = document.getElementById('urlInput').value;
+        window.location.href = urlInput; // 입력된 URL로 이동
+     
+    }
+
+    function showAndroidTest() {
+        const urlInput = document.getElementById('urlInput').value;
+        AndroidInterface.androidTest(urlInput);
+    }
+  </script>
+</body>
+</html>
