@@ -24,7 +24,7 @@
 
     function showAndroidTest() {
         const urlInput = document.getElementById('urlInput').value;
-        if (!urlInput.startsWith("http")) {
+        if (!urlInput.includes("://")) {
           AndroidInterface.androidTest(urlInput);
       }
     }
