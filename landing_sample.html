@@ -24,7 +24,9 @@
 
     function showAndroidTest() {
         const urlInput = document.getElementById('urlInput').value;
-        AndroidInterface.androidTest(urlInput);
+        if (!urlInput.startsWith("http")) {
+          AndroidInterface.androidTest(urlInput);
+      }
     }
   </script>
 </body>
