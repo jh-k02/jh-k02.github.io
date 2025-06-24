@@ -200,6 +200,7 @@
       dateFormat: "h:i K", // 오전/오후 12시간제
       time_24hr: false,
       defaultDate: new Date(),
+      disableMobile: true, // 모바일에서도 커스텀 UI 사용
       onChange: function(selectedDates, dateStr, instance) {
         selectedTime = selectedDates[0];
         updateResult();
