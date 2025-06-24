@@ -337,7 +337,7 @@
       if (hour12 === 0) hour12 = 12;
       const hourIdx = hour12 - 1;
       const minIdx = minute;
-      const restIdx = 30; // 1시간 30분(90분) 기본
+      const restIdx = 3; // 1시간 30분(90분) 기본 (60,70,80,90,100,110,120) -> index 3
       document.getElementById('ampmWheel').scrollTo(0, ampmIdx * 60);
       document.getElementById('hourWheel').scrollTo(0, hourIdx * 60);
       document.getElementById('minuteWheel').scrollTo(0, minIdx * 60);
