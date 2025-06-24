@@ -156,48 +156,68 @@
       align-items: center;
       justify-content: center;
     }
+    .wheel-picker {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+      width: 100%;
+      height: 120px;
+      margin-bottom: 0;
+      gap: 8px;
+    }
+    .wheel {
+      width: 80px;
+      height: 120px;
+      overflow-y: scroll;
+      background: #f8fafd;
+      border-radius: 12px;
+      border: 2px solid #bbb;
+      box-sizing: border-box;
+      position: relative;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .wheel::-webkit-scrollbar { display: none; }
+    .wheel-item {
+      font-size: 2.2rem;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: center;
+      color: #222;
+      background: transparent;
+      transition: background 0.2s, color 0.2s;
+    }
+    .wheel-item.selected {
+      background: #e3f0f2;
+      color: #007aff;
+      font-weight: bold;
+      border-radius: 8px;
+    }
+    .wheel-center-highlight {
+      position: absolute;
+      left: 0; right: 0;
+      top: 40px; height: 40px;
+      border-top: 2px solid #007aff33;
+      border-bottom: 2px solid #007aff33;
+      pointer-events: none;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 1번: 시간 선택 (커스텀 select 3개) -->
+    <!-- 1번: 시간 선택 (커스텀 휠 피커) -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
       <label class="timelabel">시작 시간</label>
-      <div class="custom-time-picker">
-        <select id="ampm" class="wheel-select">
-          <option value="AM">오전</option>
-          <option value="PM">오후</option>
-        </select>
-        <select id="hour" class="wheel-select">
-          <!-- 1~12 -->
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-        </select>
-        <select id="minute" class="wheel-select">
-          <!-- 00~59 (5분 단위) -->
-          <option value="00">00</option>
-          <option value="05">05</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="30">30</option>
-          <option value="35">35</option>
-          <option value="40">40</option>
-          <option value="45">45</option>
-          <option value="50">50</option>
-          <option value="55">55</option>
-        </select>
+      <div class="wheel-picker">
+        <div class="wheel" id="ampmWheel"></div>
+        <div class="wheel" id="hourWheel"></div>
+        <div class="wheel" id="minuteWheel"></div>
+        <div class="wheel-center-highlight"></div>
       </div>
     </div>
     <!-- 휴식 시간 선택 -->
@@ -220,50 +240,112 @@
     </div>
   </div>
   <script>
-    // 오전/오후, 시, 분을 분 단위로 변환
-    function getStartTimeInMinutes() {
-      const ampm = document.getElementById('ampm').value;
-      const hour = parseInt(document.getElementById('hour').value, 10);
-      const minute = parseInt(document.getElementById('minute').value, 10);
-      let h24 = hour % 12;
-      if (ampm === 'PM') h24 += 12;
-      return h24 * 60 + minute;
+    // 휠 데이터 생성
+    const ampmList = ['오전', '오후'];
+    const hourList = Array.from({length: 12}, (_, i) => (i+1).toString().padStart(2, '0'));
+    const minuteList = Array.from({length: 12}, (_, i) => (i*5).toString().padStart(2, '0'));
+
+    function makeWheel(wheelId, dataList) {
+      const wheel = document.getElementById(wheelId);
+      wheel.innerHTML = '';
+      // 위아래에 빈칸 추가(스크롤 중앙 맞춤용)
+      wheel.appendChild(document.createElement('div')).className = 'wheel-item';
+      dataList.forEach(val => {
+        const div = document.createElement('div');
+        div.className = 'wheel-item';
+        div.textContent = val;
+        wheel.appendChild(div);
+      });
+      wheel.appendChild(document.createElement('div')).className = 'wheel-item';
     }
-    // 분 단위를 오전/오후 hh:mm 형식으로 변환
-    function minutesToAmPmStr(totalMinutes) {
-      let hour = Math.floor(totalMinutes / 60) % 24;
-      let minute = totalMinutes % 60;
-      const isAM = hour < 12;
-      let period = isAM ? '오전' : '오후';
-      let hour12 = hour % 12;
-      if (hour12 === 0) hour12 = 12;
-      return `${period} ${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+    makeWheel('ampmWheel', ampmList);
+    makeWheel('hourWheel', hourList);
+    makeWheel('minuteWheel', minuteList);
+
+    // 스크롤 위치를 가장 가까운 아이템에 맞추고, 선택 표시
+    function snapWheel(wheel, listLen) {
+      const scroll = wheel.scrollTop;
+      const idx = Math.round(scroll / 40);
+      wheel.scrollTo({ top: idx * 40, behavior: 'smooth' });
+      Array.from(wheel.children).forEach((el, i) => {
+        el.classList.toggle('selected', i === idx+1);
+      });
+      return idx;
     }
-    const resultTime = document.getElementById('resultTime');
-    const restSelect = document.getElementById('restSelect');
+
+    // 현재 선택된 값 가져오기
+    function getWheelValue(wheel, list) {
+      const idx = Math.round(wheel.scrollTop / 40);
+      return list[idx];
+    }
+
+    // 종료 시간 계산
     function updateResult() {
-      const restMinutes = parseInt(restSelect.value, 10);
-      const startMinutes = getStartTimeInMinutes();
+      const ampm = getWheelValue(document.getElementById('ampmWheel'), ampmList);
+      const hour = parseInt(getWheelValue(document.getElementById('hourWheel'), hourList), 10);
+      const minute = parseInt(getWheelValue(document.getElementById('minuteWheel'), minuteList), 10);
+      let h24 = hour % 12;
+      if (ampm === '오후') h24 += 12;
+      const startMinutes = h24 * 60 + minute;
+      const restMinutes = parseInt(document.getElementById('restSelect').value, 10);
       const endMinutes = startMinutes + restMinutes;
-      resultTime.textContent = minutesToAmPmStr(endMinutes);
+      // 결과 표시
+      let endHour = Math.floor(endMinutes / 60) % 24;
+      let endMinute = endMinutes % 60;
+      const isAM = endHour < 12;
+      let period = isAM ? '오전' : '오후';
+      let hour12 = endHour % 12;
+      if (hour12 === 0) hour12 = 12;
+      document.getElementById('resultTime').textContent = `${period} ${String(hour12).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
     }
-    // 최초: 현재 시간 세팅
+
+    // 휠 스크롤 이벤트 등록
+    function addWheelEvents(wheel, list) {
+      let timeout;
+      wheel.addEventListener('scroll', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          snapWheel(wheel, list.length);
+          updateResult();
+        }, 80);
+      });
+      // 클릭 시 해당 아이템으로 이동
+      wheel.addEventListener('click', e => {
+        if (e.target.classList.contains('wheel-item')) {
+          const idx = Array.from(wheel.children).indexOf(e.target) - 1;
+          if (idx >= 0 && idx < list.length) {
+            wheel.scrollTo({ top: idx * 40, behavior: 'smooth' });
+            setTimeout(() => updateResult(), 200);
+          }
+        }
+      });
+    }
+    addWheelEvents(document.getElementById('ampmWheel'), ampmList);
+    addWheelEvents(document.getElementById('hourWheel'), hourList);
+    addWheelEvents(document.getElementById('minuteWheel'), minuteList);
+
+    // 최초: 현재 시간에 맞춰 휠 위치 세팅
     window.onload = function() {
       const now = new Date();
       let hour = now.getHours();
       let minute = now.getMinutes();
-      const ampm = hour < 12 ? 'AM' : 'PM';
+      const ampmIdx = hour < 12 ? 0 : 1;
       let hour12 = hour % 12;
       if (hour12 === 0) hour12 = 12;
-      document.getElementById('ampm').value = ampm;
-      document.getElementById('hour').value = hour12;
-      document.getElementById('minute').value = String(Math.floor(minute / 5) * 5).padStart(2, '0');
-      updateResult();
+      const hourIdx = hour12 - 1;
+      const minIdx = Math.floor(minute / 5);
+      document.getElementById('ampmWheel').scrollTo(0, ampmIdx * 40);
+      document.getElementById('hourWheel').scrollTo(0, hourIdx * 40);
+      document.getElementById('minuteWheel').scrollTo(0, minIdx * 40);
+      setTimeout(() => {
+        snapWheel(document.getElementById('ampmWheel'), ampmList.length);
+        snapWheel(document.getElementById('hourWheel'), hourList.length);
+        snapWheel(document.getElementById('minuteWheel'), minuteList.length);
+        updateResult();
+      }, 100);
     };
-    document.getElementById('ampm').addEventListener('change', updateResult);
-    document.getElementById('hour').addEventListener('change', updateResult);
-    document.getElementById('minute').addEventListener('change', updateResult);
-    restSelect.addEventListener('change', updateResult);
+    document.getElementById('restSelect').addEventListener('change', updateResult);
   </script>
 </body>
 </html> 
