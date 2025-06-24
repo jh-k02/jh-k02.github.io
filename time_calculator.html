@@ -73,10 +73,6 @@
     <div class="item">
       <input type="time" id="timeInput">
     </div>
-    <!-- 2번: 계산 버튼 -->
-    <div class="item">
-      <button id="calcBtn">계산</button>
-    </div>
     <!-- 3번: 결과 표시 -->
     <div class="item">
       <div class="result" id="resultTime"></div>
@@ -105,7 +101,6 @@
     // 초기 세팅
     const timeInput = document.getElementById('timeInput');
     const resultTime = document.getElementById('resultTime');
-    const calcBtn = document.getElementById('calcBtn');
 
     function updateResult() {
       resultTime.textContent = addOneHourThirty(timeInput.value);
@@ -115,11 +110,11 @@
     window.onload = function() {
       const nowStr = getCurrentTimeStr();
       timeInput.value = nowStr;
-      resultTime.textContent = addOneHourThirty(nowStr);
+      updateResult();
     };
 
-    // 버튼 클릭 시 계산
-    calcBtn.onclick = updateResult;
+    // 시간 선택 시 자동 계산
+    timeInput.addEventListener('input', updateResult);
   </script>
 </body>
 </html> 
