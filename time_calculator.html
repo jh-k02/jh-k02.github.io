@@ -66,15 +66,16 @@
       font-weight: bold;
     }
     .timelabel {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: bold;
-      margin-bottom: 12px;
-      margin-left: 4px;
+      margin-bottom: 16px;
+      margin-left: 8px;
       letter-spacing: 1px;
     }
     .timeinput {
       font-size: 2.8rem;
-      width: 100%;
+      width: calc(100% - 32px);
+      margin: 0 16px;
       height: 72px;
       border-radius: 12px;
       border: 3px solid #bbb;
@@ -99,6 +100,10 @@
       font-weight: bold;
       margin-top: 0;
     }
+    .spaced {
+      width: calc(100% - 32px) !important;
+      margin: 0 16px !important;
+    }
   </style>
 </head>
 <body>
@@ -106,12 +111,12 @@
     <!-- 1번: 시간 선택 -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
       <label for="timeInput" class="timelabel">시작 시간</label>
-      <input type="time" id="timeInput" class="timeinput">
+      <input type="time" id="timeInput" class="timeinput spaced">
     </div>
     <!-- 3번: 결과 표시 -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
       <label for="resultTime" class="timelabel">종료 시간</label>
-      <div class="result" id="resultTime"></div>
+      <div class="result spaced" id="resultTime"></div>
     </div>
   </div>
   <script>
