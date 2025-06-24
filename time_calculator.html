@@ -129,23 +129,76 @@
       display: flex;
       align-items: center;
     }
+    .custom-time-picker {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 0;
+      gap: 8px;
+    }
+    .wheel-select {
+      font-size: 2.2rem;
+      height: 72px;
+      width: 32vw;
+      max-width: 100px;
+      text-align: center;
+      border-radius: 12px;
+      border: 3px solid #bbb;
+      background: #f8fafd;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      overflow: hidden;
+      box-sizing: border-box;
+      margin: 0;
+      padding-left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
-  <!-- simple-wheel-picker 라이브러리 추가 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-wheel-picker@1.1.2/dist/simple-wheel-picker.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/simple-wheel-picker@1.1.2/dist/simple-wheel-picker.min.js"></script>
-  <!-- flatpickr 라이브러리 추가 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <!-- mobiscroll 4.x 무료 CDN 추가 -->
-  <link rel="stylesheet" href="https://unpkg.com/@mobiscroll/javascript@4.10.9/css/mobiscroll.min.css">
-  <script src="https://unpkg.com/@mobiscroll/javascript@4.10.9/js/mobiscroll.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <!-- 1번: 시간 선택 -->
+    <!-- 1번: 시간 선택 (커스텀 select 3개) -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
-      <label for="timeInput" class="timelabel">시작 시간</label>
-      <input type="time" id="timeInput" class="timeinput spaced">
+      <label class="timelabel">시작 시간</label>
+      <div class="custom-time-picker">
+        <select id="ampm" class="wheel-select">
+          <option value="AM">오전</option>
+          <option value="PM">오후</option>
+        </select>
+        <select id="hour" class="wheel-select">
+          <!-- 1~12 -->
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+        <select id="minute" class="wheel-select">
+          <!-- 00~59 (5분 단위) -->
+          <option value="00">00</option>
+          <option value="05">05</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="35">35</option>
+          <option value="40">40</option>
+          <option value="45">45</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+        </select>
+      </div>
     </div>
     <!-- 휴식 시간 선택 -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
@@ -167,46 +220,49 @@
     </div>
   </div>
   <script>
-    // 현재 시간을 HH:mm 형식으로 반환
-    function getCurrentTimeStr() {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      return `${h}:${m}`;
+    // 오전/오후, 시, 분을 분 단위로 변환
+    function getStartTimeInMinutes() {
+      const ampm = document.getElementById('ampm').value;
+      const hour = parseInt(document.getElementById('hour').value, 10);
+      const minute = parseInt(document.getElementById('minute').value, 10);
+      let h24 = hour % 12;
+      if (ampm === 'PM') h24 += 12;
+      return h24 * 60 + minute;
     }
-
-    // 시간 문자열(HH:mm)에 분 단위 더하기
-    function addMinutesToTime(timeStr, minutes) {
-      const [h, m] = timeStr.split(':').map(Number);
-      let date = new Date();
-      date.setHours(h, m, 0, 0);
-      date.setMinutes(date.getMinutes() + minutes);
-      let hour = date.getHours();
-      let minute = date.getMinutes();
+    // 분 단위를 오전/오후 hh:mm 형식으로 변환
+    function minutesToAmPmStr(totalMinutes) {
+      let hour = Math.floor(totalMinutes / 60) % 24;
+      let minute = totalMinutes % 60;
       const isAM = hour < 12;
       let period = isAM ? '오전' : '오후';
       let hour12 = hour % 12;
       if (hour12 === 0) hour12 = 12;
       return `${period} ${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     }
-
-    const timeInput = document.getElementById('timeInput');
     const resultTime = document.getElementById('resultTime');
     const restSelect = document.getElementById('restSelect');
-
     function updateResult() {
-      resultTime.textContent = addMinutesToTime(timeInput.value, parseInt(restSelect.value, 10));
+      const restMinutes = parseInt(restSelect.value, 10);
+      const startMinutes = getStartTimeInMinutes();
+      const endMinutes = startMinutes + restMinutes;
+      resultTime.textContent = minutesToAmPmStr(endMinutes);
     }
-
     // 최초: 현재 시간 세팅
     window.onload = function() {
-      const nowStr = getCurrentTimeStr();
-      timeInput.value = nowStr;
+      const now = new Date();
+      let hour = now.getHours();
+      let minute = now.getMinutes();
+      const ampm = hour < 12 ? 'AM' : 'PM';
+      let hour12 = hour % 12;
+      if (hour12 === 0) hour12 = 12;
+      document.getElementById('ampm').value = ampm;
+      document.getElementById('hour').value = hour12;
+      document.getElementById('minute').value = String(Math.floor(minute / 5) * 5).padStart(2, '0');
       updateResult();
     };
-
-    // 시간/휴식 선택 시 자동 계산
-    timeInput.addEventListener('input', updateResult);
+    document.getElementById('ampm').addEventListener('change', updateResult);
+    document.getElementById('hour').addEventListener('change', updateResult);
+    document.getElementById('minute').addEventListener('change', updateResult);
     restSelect.addEventListener('change', updateResult);
   </script>
 </body>
