@@ -136,73 +136,77 @@
       margin-bottom: 0;
       gap: 8px;
     }
-    .wheel-select {
-      font-size: 2.2rem;
-      height: 72px;
-      width: 32vw;
-      max-width: 100px;
-      text-align: center;
-      border-radius: 12px;
-      border: 3px solid #bbb;
-      background: #f8fafd;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      overflow: hidden;
-      box-sizing: border-box;
-      margin: 0;
-      padding-left: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
     .wheel-picker {
       display: flex;
       justify-content: center;
       align-items: flex-start;
       position: relative;
-      width: 100%;
-      height: 120px;
+      width: calc(100% - 32px);
+      margin: 0 16px;
+      height: 180px;
       margin-bottom: 0;
-      gap: 8px;
+      gap: 12px;
+    }
+    .rest-picker {
+      width: calc(100% - 32px);
+      max-width: none;
+      margin: 0 16px;
+      justify-content: center;
+    }
+    .rest-picker .wheel {
+      width: 100%;
+      max-width: 100%;
     }
     .wheel {
-      width: 80px;
-      height: 120px;
+      width: 110px;
+      height: 180px;
       overflow-y: scroll;
       background: #f8fafd;
-      border-radius: 12px;
-      border: 2px solid #bbb;
+      border-radius: 16px;
+      border: 3px solid #bbb;
       box-sizing: border-box;
       position: relative;
       scroll-snap-type: y mandatory;
       scrollbar-width: none;
       -ms-overflow-style: none;
+      flex: 1 1 0;
+    }
+    .wheel.ampm-wheel {
+      width: 70px;
+      min-width: 60px;
+      max-width: 80px;
+    }
+    .wheel.ampm-wheel .wheel-item {
+      font-size: 1.5rem;
     }
     .wheel::-webkit-scrollbar { display: none; }
     .wheel-item {
-      font-size: 2.2rem;
-      height: 40px;
+      font-size: 2.1rem;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
       scroll-snap-align: center;
-      color: #222;
+      color: #bbb;
       background: transparent;
-      transition: background 0.2s, color 0.2s;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s, font-size 0.2s;
+      font-weight: 400;
     }
     .wheel-item.selected {
-      background: #e3f0f2;
-      color: #007aff;
+      background: #007aff;
+      color: #fff;
       font-weight: bold;
-      border-radius: 8px;
+      border-radius: 12px;
+      box-shadow: 0 0 0 4px #007aff33;
+      font-size: 3.2rem;
+      letter-spacing: 2px;
     }
     .wheel-center-highlight {
       position: absolute;
       left: 0; right: 0;
-      top: 40px; height: 40px;
-      border-top: 2px solid #007aff33;
-      border-bottom: 2px solid #007aff33;
+      top: 60px; height: 60px;
+      border-top: 2px solid #007aff66;
+      border-bottom: 2px solid #007aff66;
       pointer-events: none;
       z-index: 2;
     }
@@ -214,24 +218,19 @@
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
       <label class="timelabel">시작 시간</label>
       <div class="wheel-picker">
-        <div class="wheel" id="ampmWheel"></div>
+        <div class="wheel ampm-wheel" id="ampmWheel"></div>
         <div class="wheel" id="hourWheel"></div>
         <div class="wheel" id="minuteWheel"></div>
         <div class="wheel-center-highlight"></div>
       </div>
     </div>
-    <!-- 휴식 시간 선택 -->
+    <!-- 휴식 시간 선택 (휠) -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
-      <label for="restSelect" class="timelabel">휴식 시간</label>
-      <select id="restSelect" class="restselect spaced">
-        <option value="60">1시간</option>
-        <option value="70">1시간 10분</option>
-        <option value="80">1시간 20분</option>
-        <option value="90" selected>1시간 30분</option>
-        <option value="100">1시간 40분</option>
-        <option value="110">1시간 50분</option>
-        <option value="120">2시간</option>
-      </select>
+      <label class="timelabel">휴식 시간</label>
+      <div class="wheel-picker rest-picker">
+        <div class="wheel" id="restWheel"></div>
+        <div class="wheel-center-highlight"></div>
+      </div>
     </div>
     <!-- 3번: 결과 표시 -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
@@ -243,9 +242,10 @@
     // 휠 데이터 생성
     const ampmList = ['오전', '오후'];
     const hourList = Array.from({length: 12}, (_, i) => (i+1).toString().padStart(2, '0'));
-    const minuteList = Array.from({length: 12}, (_, i) => (i*5).toString().padStart(2, '0'));
+    const minuteList = Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0'));
+    const restList = Array.from({length: 7}, (_, i) => (60 + i*10).toString()); // 60~120분, 10분 단위
 
-    function makeWheel(wheelId, dataList) {
+    function makeWheel(wheelId, dataList, labelFunc) {
       const wheel = document.getElementById(wheelId);
       wheel.innerHTML = '';
       // 위아래에 빈칸 추가(스크롤 중앙 맞춤용)
@@ -253,7 +253,7 @@
       dataList.forEach(val => {
         const div = document.createElement('div');
         div.className = 'wheel-item';
-        div.textContent = val;
+        div.textContent = labelFunc ? labelFunc(val) : val;
         wheel.appendChild(div);
       });
       wheel.appendChild(document.createElement('div')).className = 'wheel-item';
@@ -262,12 +262,13 @@
     makeWheel('ampmWheel', ampmList);
     makeWheel('hourWheel', hourList);
     makeWheel('minuteWheel', minuteList);
+    makeWheel('restWheel', restList, v => `${Math.floor(v/60)}시간 ${v%60 === 0 ? '' : (v%60+'분')}`.trim());
 
     // 스크롤 위치를 가장 가까운 아이템에 맞추고, 선택 표시
     function snapWheel(wheel, listLen) {
       const scroll = wheel.scrollTop;
-      const idx = Math.round(scroll / 40);
-      wheel.scrollTo({ top: idx * 40, behavior: 'smooth' });
+      const idx = Math.round(scroll / 60);
+      wheel.scrollTo({ top: idx * 60, behavior: 'smooth' });
       Array.from(wheel.children).forEach((el, i) => {
         el.classList.toggle('selected', i === idx+1);
       });
@@ -276,7 +277,7 @@
 
     // 현재 선택된 값 가져오기
     function getWheelValue(wheel, list) {
-      const idx = Math.round(wheel.scrollTop / 40);
+      const idx = Math.round(wheel.scrollTop / 60);
       return list[idx];
     }
 
@@ -288,7 +289,7 @@
       let h24 = hour % 12;
       if (ampm === '오후') h24 += 12;
       const startMinutes = h24 * 60 + minute;
-      const restMinutes = parseInt(document.getElementById('restSelect').value, 10);
+      const restMinutes = parseInt(getWheelValue(document.getElementById('restWheel'), restList), 10);
       const endMinutes = startMinutes + restMinutes;
       // 결과 표시
       let endHour = Math.floor(endMinutes / 60) % 24;
@@ -315,7 +316,7 @@
         if (e.target.classList.contains('wheel-item')) {
           const idx = Array.from(wheel.children).indexOf(e.target) - 1;
           if (idx >= 0 && idx < list.length) {
-            wheel.scrollTo({ top: idx * 40, behavior: 'smooth' });
+            wheel.scrollTo({ top: idx * 60, behavior: 'smooth' });
             setTimeout(() => updateResult(), 200);
           }
         }
@@ -324,6 +325,7 @@
     addWheelEvents(document.getElementById('ampmWheel'), ampmList);
     addWheelEvents(document.getElementById('hourWheel'), hourList);
     addWheelEvents(document.getElementById('minuteWheel'), minuteList);
+    addWheelEvents(document.getElementById('restWheel'), restList);
 
     // 최초: 현재 시간에 맞춰 휠 위치 세팅
     window.onload = function() {
@@ -334,18 +336,20 @@
       let hour12 = hour % 12;
       if (hour12 === 0) hour12 = 12;
       const hourIdx = hour12 - 1;
-      const minIdx = Math.floor(minute / 5);
-      document.getElementById('ampmWheel').scrollTo(0, ampmIdx * 40);
-      document.getElementById('hourWheel').scrollTo(0, hourIdx * 40);
-      document.getElementById('minuteWheel').scrollTo(0, minIdx * 40);
+      const minIdx = minute;
+      const restIdx = 30; // 1시간 30분(90분) 기본
+      document.getElementById('ampmWheel').scrollTo(0, ampmIdx * 60);
+      document.getElementById('hourWheel').scrollTo(0, hourIdx * 60);
+      document.getElementById('minuteWheel').scrollTo(0, minIdx * 60);
+      document.getElementById('restWheel').scrollTo(0, restIdx * 60);
       setTimeout(() => {
         snapWheel(document.getElementById('ampmWheel'), ampmList.length);
         snapWheel(document.getElementById('hourWheel'), hourList.length);
         snapWheel(document.getElementById('minuteWheel'), minuteList.length);
+        snapWheel(document.getElementById('restWheel'), restList.length);
         updateResult();
       }, 100);
     };
-    document.getElementById('restSelect').addEventListener('change', updateResult);
   </script>
 </body>
 </html> 
