@@ -104,6 +104,19 @@
       width: calc(100% - 32px) !important;
       margin: 0 16px !important;
     }
+    .restselect {
+      font-size: 2rem;
+      width: calc(100% - 32px);
+      margin: 0 16px;
+      height: 56px;
+      border-radius: 10px;
+      border: 2px solid #bbb;
+      background: #f8fafd;
+      box-sizing: border-box;
+      padding-left: 12px;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
@@ -112,6 +125,19 @@
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
       <label for="timeInput" class="timelabel">시작 시간</label>
       <input type="time" id="timeInput" class="timeinput spaced">
+    </div>
+    <!-- 휴식 시간 선택 -->
+    <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
+      <label for="restSelect" class="timelabel">휴식 시간</label>
+      <select id="restSelect" class="restselect spaced">
+        <option value="60">1시간</option>
+        <option value="70">1시간 10분</option>
+        <option value="80">1시간 20분</option>
+        <option value="90" selected>1시간 30분</option>
+        <option value="100">1시간 40분</option>
+        <option value="110">1시간 50분</option>
+        <option value="120">2시간</option>
+      </select>
     </div>
     <!-- 3번: 결과 표시 -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
@@ -128,12 +154,12 @@
       return `${h}:${m}`;
     }
 
-    // 시간 문자열(HH:mm)에 1시간 30분 더하기
-    function addOneHourThirty(timeStr) {
+    // 시간 문자열(HH:mm)에 분 단위 더하기
+    function addMinutesToTime(timeStr, minutes) {
       const [h, m] = timeStr.split(':').map(Number);
       let date = new Date();
       date.setHours(h, m, 0, 0);
-      date.setMinutes(date.getMinutes() + 90);
+      date.setMinutes(date.getMinutes() + minutes);
       const nh = String(date.getHours()).padStart(2, '0');
       const nm = String(date.getMinutes()).padStart(2, '0');
       return `${nh}:${nm}`;
@@ -142,9 +168,11 @@
     // 초기 세팅
     const timeInput = document.getElementById('timeInput');
     const resultTime = document.getElementById('resultTime');
+    const restSelect = document.getElementById('restSelect');
 
     function updateResult() {
-      resultTime.textContent = addOneHourThirty(timeInput.value);
+      const restMinutes = parseInt(restSelect.value, 10);
+      resultTime.textContent = addMinutesToTime(timeInput.value, restMinutes);
     }
 
     // 최초: 현재 시간 세팅
@@ -154,8 +182,9 @@
       updateResult();
     };
 
-    // 시간 선택 시 자동 계산
+    // 시간/휴식 선택 시 자동 계산
     timeInput.addEventListener('input', updateResult);
+    restSelect.addEventListener('change', updateResult);
   </script>
 </body>
 </html> 
