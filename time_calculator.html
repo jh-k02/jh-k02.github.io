@@ -130,13 +130,16 @@
       align-items: center;
     }
   </style>
+  <!-- simple-wheel-picker 라이브러리 추가 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-wheel-picker@1.1.2/dist/simple-wheel-picker.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/simple-wheel-picker@1.1.2/dist/simple-wheel-picker.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <!-- 1번: 시간 선택 -->
+    <!-- 1번: 시간 선택 (simple-wheel-picker) -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
-      <label for="timeInput" class="timelabel">시작 시간</label>
-      <input type="time" id="timeInput" class="timeinput spaced">
+      <label class="timelabel">시작 시간</label>
+      <div id="timePicker"></div>
     </div>
     <!-- 휴식 시간 선택 -->
     <div class="item" style="flex-direction: column; align-items: stretch; width: 100%;">
@@ -200,6 +203,60 @@
 
     // 시간/휴식 선택 시 자동 계산
     timeInput.addEventListener('input', updateResult);
+    restSelect.addEventListener('change', updateResult);
+
+    // 오전/오후, 시, 분 옵션 생성
+    const ampm = ['오전', '오후'];
+    const hours = Array.from({length: 12}, (_, i) => (i+1).toString().padStart(2, '0'));
+    const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
+
+    // 종료 시간 계산 함수
+    function getEndTimeStr(start, restMinutes) {
+      // start: [ampm, hour, minute]
+      let hour = parseInt(start[1], 10);
+      let minute = parseInt(start[2], 10);
+      let ampmVal = start[0];
+      let h24 = hour % 12;
+      if (ampmVal === '오후') h24 += 12;
+      let totalMinutes = h24 * 60 + minute + restMinutes;
+      let endHour = Math.floor(totalMinutes / 60) % 24;
+      let endMinute = totalMinutes % 60;
+      let isAM = endHour < 12;
+      let period = isAM ? '오전' : '오후';
+      let hour12 = endHour % 12;
+      if (hour12 === 0) hour12 = 12;
+      return `${period} ${String(hour12).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+    }
+
+    // 휠 피커 생성
+    let picker;
+    function setPickerAndInit() {
+      // 현재 시간으로 초기화
+      const now = new Date();
+      let hour = now.getHours();
+      let minute = now.getMinutes();
+      let ampmVal = hour < 12 ? '오전' : '오후';
+      let hour12 = hour % 12;
+      if (hour12 === 0) hour12 = 12;
+      let minStr = String(Math.floor(minute / 5) * 5).padStart(2, '0');
+      picker = new SimpleWheelPicker({
+        el: '#timePicker',
+        data: [ampm, hours, minutes],
+        defaultValue: [ampmVal, hour12.toString().padStart(2, '0'), minStr],
+        onSelect: updateResult
+      });
+    }
+
+    function updateResult() {
+      const start = picker.getValue();
+      const restMinutes = parseInt(restSelect.value, 10);
+      resultTime.textContent = getEndTimeStr(start, restMinutes);
+    }
+
+    window.onload = function() {
+      setPickerAndInit();
+      updateResult();
+    };
     restSelect.addEventListener('change', updateResult);
   </script>
 </body>
