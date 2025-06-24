@@ -166,9 +166,13 @@
       let date = new Date();
       date.setHours(h, m, 0, 0);
       date.setMinutes(date.getMinutes() + minutes);
-      const nh = String(date.getHours()).padStart(2, '0');
-      const nm = String(date.getMinutes()).padStart(2, '0');
-      return `${nh}:${nm}`;
+      let hour = date.getHours();
+      const minute = String(date.getMinutes()).padStart(2, '0');
+      const isAM = hour < 12;
+      let period = isAM ? '오전' : '오후';
+      let hour12 = hour % 12;
+      if (hour12 === 0) hour12 = 12;
+      return `${period} ${String(hour12).padStart(2, '0')}:${minute}`;
     }
 
     // 초기 세팅
