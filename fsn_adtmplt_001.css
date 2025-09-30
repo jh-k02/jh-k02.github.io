@@ -1,0 +1,290 @@
+.fsn_adtmplt_close {
+    display: none;
+    z-index: 1000;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    font-family: Arial,sans-serif;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    border-radius: 100%;
+    cursor: pointer
+}
+
+.fsn_adtmplt_close.show {
+    display: flex
+}
+
+.fsn_adtmplt_close.x_position_left {
+    left: 10px;
+    right: auto
+}
+
+.fsn_adtmplt_close.x_position_right {
+    right: 10px;
+    left: auto
+}
+
+.fsn_adtmplt_close.close_01,.fsn_adtmplt_close.close_02 {
+    color: #fff
+}
+
+.fsn_adtmplt_close.close_03 {
+    color: #000
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close.close_01 {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/bg_close_01.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close.close_01 {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/bg_close_01.svg)
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close.close_02 {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/bg_close_02.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close.close_02 {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/bg_close_02.svg)
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close.close_03 {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/bg_close_03.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close.close_03 {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/bg_close_03.svg)
+}
+
+.fsn_adtmplt_close>.ico_close_01,.fsn_adtmplt_close>.ico_close_02,.fsn_adtmplt_close>.ico_close_03 {
+    width: 50%;
+    height: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close>.ico_close_01 {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/ico_close_01.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close>.ico_close_01 {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/ico_close_01.svg)
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close>.ico_close_02 {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/ico_close_02.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close>.ico_close_02 {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/ico_close_02.svg)
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close>.ico_close_03 {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/ico_close_03.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close>.ico_close_03 {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/ico_close_03.svg)
+}
+
+.fsn_adtmplt_close.default-size {
+    width: 12vw;
+    height: 12vw;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 52px;
+    max-height: 52px;
+    font-size: 6vw
+}
+
+.fsn_adtmplt_close_reward {
+    display: none;
+    position: fixed;
+    top: 2vw;
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    line-height: 1
+}
+
+.fsn_adtmplt_close_reward.show {
+    display: flex
+}
+
+.fsn_adtmplt_close_reward.x_position_left {
+    left: 2vw;
+    right: auto
+}
+
+.fsn_adtmplt_close_reward.x_position_right {
+    right: 2vw;
+    left: auto
+}
+
+.fsn_adtmplt_close_reward.close_01 {
+    background: rgba(200,200,200,0.5)
+}
+
+.fsn_adtmplt_close_reward.close_02 {
+    background: rgba(126,126,126,0.5);
+    border: 1px solid #b7b7b7
+}
+
+.fsn_adtmplt_close_reward.close_03 {
+    background: rgba(255,255,255,0.5)
+}
+
+.fsn_adtmplt_close_reward.close_01 .close_label,.fsn_adtmplt_close_reward.close_02 .close_label {
+    color: #fff
+}
+
+.fsn_adtmplt_close_reward.close_03 .close_label {
+    color: #000
+}
+
+.fsn_adtmplt_close_reward .close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%
+}
+
+.fsn_adtmplt_close_reward .close.x_mirror {
+    position: fixed;
+    top: 2vw;
+    z-index: 1000
+}
+
+.fsn_adtmplt_close_reward.x_position_right .close.x_mirror {
+    left: 2vw;
+    right: auto
+}
+
+.fsn_adtmplt_close_reward.x_position_left .close.x_mirror {
+    right: 2vw;
+    left: auto
+}
+
+.fsn_adtmplt_close_reward.close_01 .close {
+    background: rgba(200,200,200,0.5)
+}
+
+.fsn_adtmplt_close_reward.close_02 .close {
+    background: rgba(126,126,126,0.5)
+}
+
+.fsn_adtmplt_close_reward.close_03 .close {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid #b7b7b7
+}
+
+.fsn_adtmplt_close_reward .close .ico_close {
+    width: 50%;
+    height: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close_reward.close_01 .close .ico_close {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/ico_close_01.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close_reward.close_01 .close .ico_close {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/ico_close_01.svg)
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close_reward.close_02 .close .ico_close {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/ico_close_02.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close_reward.close_02 .close .ico_close {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/ico_close_02.svg)
+}
+
+.fsn_adtmplt_http .fsn_adtmplt_close_reward.close_03 .close .ico_close {
+    background-image: url(http://image.cauly.co.kr/adtmplt/assets/ico_close_03.svg)
+}
+
+.fsn_adtmplt_https .fsn_adtmplt_close_reward.close_03 .close .ico_close {
+    background-image: url(https://image.cauly.co.kr/adtmplt/assets/ico_close_03.svg)
+}
+
+.fsn_adtmplt_reward_dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.1);
+    z-index: 1001;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center
+}
+
+.fsn_adtmplt_reward_dialog.show {
+    display: flex
+}
+
+.fsn_adtmplt_reward_dialog>div {
+    padding: clamp(24px,3.5vw,60px) clamp(24px,3.5vw,60px);
+    border-radius: 2vw;
+    box-shadow: 0 1vw 3vw rgba(0,0,0,0.3);
+    background-color: #fff;
+    font-family: Arial,sans-serif
+}
+
+.fsn_adtmplt_reward_dialog .dialog_content {
+    width: 70vw;
+    max-width: 500px;
+    min-width: 250px
+}
+
+.fsn_adtmplt_reward_dialog .dialog_title {
+    font-size: clamp(18px,3.5vw,2.5vw);
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 2vw
+}
+
+.fsn_adtmplt_reward_dialog .dialog_message {
+    font-size: clamp(14px,3vw,2vw);
+    color: #666;
+    margin: 0 0 3vw
+}
+
+.fsn_adtmplt_reward_dialog .dialog_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2vw;
+    width: 100%;
+    padding: 0 0 1vw
+}
+
+.fsn_adtmplt_reward_dialog .dialog_actions>button {
+    padding: clamp(10px,2vw,16px) clamp(20px,3.5vw,40px);
+    border: none;
+    border-radius: clamp(6px,0.8vw,6px);
+    font-size: clamp(14px,3vw,2vw);
+    cursor: pointer
+}
+
+.fsn_adtmplt_reward_dialog .dialog_actions>button.close_btn {
+    background-color: #e0e0e0;
+    color: #333
+}
+
+.fsn_adtmplt_reward_dialog .dialog_actions>button.continue_btn {
+    background-color: #176efb;
+    color: #fff;
+    box-shadow: 0 .5vw .5vw rgba(0,0,0,0.3)
+}
