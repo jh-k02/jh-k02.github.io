@@ -16,7 +16,6 @@
 })(window)
 
 function FsnAdtmplt(A, t) {
-    // ... (이전과 동일한 WeakMap 폴리필 및 리스너 저장소) ...
     var _fsnIdCounter = 0;
     var _fsnListenerMap = {};
 
@@ -120,7 +119,6 @@ function FsnAdtmplt(A, t) {
     }
 
     function p(b, e, d) {
-        // Polyfill을 사용하도록 수정
         var params = new URLSearchParams(w.substring(w.indexOf('?')));
         var val = params.get(b);
         
@@ -218,7 +216,6 @@ function FsnAdtmplt(A, t) {
         
         try {
             var b_params = new URLSearchParams(w.substring(w.indexOf('?')));
-            // Note: forEach is not supported on URLSearchParams polyfill, this part is for modern browser debugging
         } catch (g) {}
 
         var b = document.querySelector("body");
@@ -255,10 +252,17 @@ function FsnAdtmplt(A, t) {
             }, 1000);
         }
 
-        document.querySelectorAll("a").forEach(function(g) {
+        // --- 여기가 수정된 부분입니다 ---
+        var links = document.querySelectorAll("a");
+        for (var i = 0; i < links.length; i++) {
+            var g = links[i];
             var r = g.getAttribute("href");
-            u(g, false, true, function() { return r; });
-        });
+            // 클로저를 사용하여 각 루프의 r 값을 유지합니다.
+            (function(current_r) {
+                u(g, false, true, function() { return current_r; });
+            })(r);
+        }
+        // --- 수정 끝 ---
 
         if (a.cauly_x_button == "1") {
             f.classList.add(a.x_position == "l" ? "x_position_left" : "x_position_right");
