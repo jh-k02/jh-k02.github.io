@@ -1,60 +1,65 @@
 <script>
-    function loadedFunc(a) {
-        var b = document.querySelector(".container");
-        var f = document.querySelector(".container>img");
-        var c = null;
+    function loadedFunc(fsn) {
+        // 'const'를 'var'로 변경 (ES5 호환성)
+        var container = document.querySelector(".container");
+        var imgTag = document.querySelector(".container>img");
+        var imgUrl = null;
+
         try {
-            c = decodeURIComponent(a.getUrlParam("img_url", null, null));
-            if (c.indexOf("http://image.cauly.co.kr/") === 0) {
-                c = c.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
+            imgUrl = decodeURIComponent(fsn.getUrlParam("img_url", null, null));
+            // 'startsWith' 메소드를 'indexOf'로 변경 (ES5 호환성)
+            if (imgUrl.indexOf("http://image.cauly.co.kr/") === 0) {
+                imgUrl = imgUrl.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
             }
-        } catch (d) {
-            console.error("img_url 디코딩 오류:", d);
+        } catch (err) {
+            console.error("img_url 디코딩 오류:", err);
         }
 
-        if (c === null || c === "null") {
+        if (imgUrl === null || imgUrl === "null") {
             console.error("img_url 파라미터는 필수값입니다.");
         } else {
-            a.imgLoad(f, c, function(d) {
-                if (d) {
-                    document.body.style.backgroundColor = d;
+            // 화살표 함수 '=>'를 일반 'function'으로 변경 (ES5 호환성)
+            fsn.imgLoad(imgTag, imgUrl, function(bgColor) {
+                if (bgColor) {
+                    document.body.style.backgroundColor = bgColor;
                 }
             });
         }
-        
-        var e = null;
+
+        var clkUrl = null;
         try {
-            e = decodeURI(a.getUrlParam("clk_url", null, null));
-        } catch (d) {
-            console.error("clk_url 디코딩 오류:", d);
+            clkUrl = decodeURI(fsn.getUrlParam("clk_url", null, null));
+        } catch (err) {
+            console.error("clk_url 디코딩 오류:", err);
         }
 
-        if (e === null || e === "null") {
+        if (clkUrl === null || clkUrl === "null") {
             console.error("clk_url 파라미터는 필수값입니다.");
         } else {
-            a.addFsnEventListener(b, false, true, function(d) {
-                return e;
+            // 화살표 함수 '=>'를 일반 'function'으로 변경 (ES5 호환성)
+            fsn.addFsnEventListener(container, false, true, function(evt) {
+                return clkUrl;
             });
-            a.xBackgroundClickUrl(e);
+            fsn.xBackgroundClickUrl(clkUrl);
         }
     }
 
     function initFsnAdtmplt() {
-        var a = window.location.protocol;
-        if (a !== "http:") {
-            a = "https:";
+        var protocol = window.location.protocol;
+        if (protocol !== "http:") {
+            protocol = "https:";
         }
-        a += "//image.cauly.co.kr/adtmplt/assets/fsn-lib/fsn_adtmplt_001";
+        var libUrl = protocol + "//image.cauly.co.kr/adtmplt/assets/fsn-lib/fsn_adtmplt_001";
         
-        var b = document.createElement("link");
-        b.rel = "stylesheet";
-        b.type = "text/css";
-        b.href = a + ".css";
-        document.head.appendChild(b);
+        var linkElem = document.createElement("link");
+        linkElem.rel = "stylesheet";
+        linkElem.type = "text/css";
+        linkElem.href = libUrl + ".css";
+        document.head.appendChild(linkElem);
         
         var scriptElem = document.createElement("script");
         scriptElem.type = "text/javascript";
-        scriptElem.src = a + ".js";
+        scriptElem.src = libUrl + ".js";
         scriptElem.onload = function() {
             new FsnAdtmplt(loadedFunc);
         };
