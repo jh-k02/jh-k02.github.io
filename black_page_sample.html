@@ -1,0 +1,65 @@
+<script>
+    function loadedFunc(a) {
+        var b = document.querySelector(".container");
+        var f = document.querySelector(".container>img");
+        var c = null;
+        try {
+            c = decodeURIComponent(a.getUrlParam("img_url", null, null));
+            if (c.indexOf("http://image.cauly.co.kr/") === 0) {
+                c = c.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
+            }
+        } catch (d) {
+            console.error("img_url 디코딩 오류:", d);
+        }
+
+        if (c === null || c === "null") {
+            console.error("img_url 파라미터는 필수값입니다.");
+        } else {
+            a.imgLoad(f, c, function(d) {
+                if (d) {
+                    document.body.style.backgroundColor = d;
+                }
+            });
+        }
+        
+        var e = null;
+        try {
+            e = decodeURI(a.getUrlParam("clk_url", null, null));
+        } catch (d) {
+            console.error("clk_url 디코딩 오류:", d);
+        }
+
+        if (e === null || e === "null") {
+            console.error("clk_url 파라미터는 필수값입니다.");
+        } else {
+            a.addFsnEventListener(b, false, true, function(d) {
+                return e;
+            });
+            a.xBackgroundClickUrl(e);
+        }
+    }
+
+    function initFsnAdtmplt() {
+        var a = window.location.protocol;
+        if (a !== "http:") {
+            a = "https:";
+        }
+        a += "//image.cauly.co.kr/adtmplt/assets/fsn-lib/fsn_adtmplt_001";
+        
+        var b = document.createElement("link");
+        b.rel = "stylesheet";
+        b.type = "text/css";
+        b.href = a + ".css";
+        document.head.appendChild(b);
+        
+        var scriptElem = document.createElement("script");
+        scriptElem.type = "text/javascript";
+        scriptElem.src = a + ".js";
+        scriptElem.onload = function() {
+            new FsnAdtmplt(loadedFunc);
+        };
+        document.head.appendChild(scriptElem);
+    }
+    
+    document.addEventListener("DOMContentLoaded", initFsnAdtmplt);
+</script>
