@@ -1,78 +1,77 @@
-<!DOCTYPE html>
-<html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>CAULY-10646</title>
-        <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; }
-            html, body { width: 100%; height: 100%; }
-            body { background-color: #010101; }
-            .container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; }
-            .container>img { border: 0 none; max-width: 100%; width: 100%; height: auto; object-fit: contain; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <img/>
-        </div>
-        <script>
-            function loadedFunc(a) {
-                var b = document.querySelector(".container");
-                var f = document.querySelector(".container>img");
-                var c = null;
-                try {
-                    c = decodeURIComponent(a.getUrlParam("img_url", null, null));
-                    if (c.indexOf("http://image.cauly.co.kr/") === 0) {
-                        c = c.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
-                    }
-                } catch (d) {
-                    console.error("img_url 디코딩 오류:", d);
-                }
-                if (c == null || c == "null") {
-                    console.error("img_url 파라미터는 필수값입니다.");
-                } else {
-                    a.imgLoad(f, c, function(d) {
-                        if (d) {
-                            document.body.style.backgroundColor = d;
-                        }
-                    });
-                }
-                var e = null;
-                try {
-                    e = decodeURI(a.getUrlParam("clk_url", null, null));
-                } catch (d) {
-                    console.error("clk_url 디코딩 오류:", d);
-                }
-                if (e == null || e == "null") {
-                    console.error("clk_url 파라미터는 필수값입니다.");
-                } else {
-                    a.addFsnEventListener(b, false, true, function(d) {
-                        return e;
-                    });
-                    a.xBackgroundClickUrl(e);
+<script>
+    function loadedFunc(fsn) {
+        var container = document.querySelector(".container");
+        var imgTag = document.querySelector(".container>img");
+        var imgUrl = null;
+
+        try {
+            imgUrl = fsn.getUrlParam("img_url", null, null);
+            if (imgUrl) {
+                imgUrl = decodeURIComponent(imgUrl);
+                // 'startsWith'를 'indexOf'로 변경 (ES5 호환성)
+                if (imgUrl.indexOf("http://image.cauly.co.kr/") === 0) {
+                    imgUrl = imgUrl.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
                 }
             }
-            function initFsnAdtmplt() {
-                var a = window.location.protocol;
-                if (a != "http:") {
-                    a = "https:";
+        } catch (err) {
+            console.error("img_url 처리 중 오류:", err);
+            imgUrl = null; // 오류 발생 시 null로 초기화
+        }
+
+        if (imgUrl == null || imgUrl == "null") {
+            console.error("img_url 파라미터는 필수값입니다.");
+        } else {
+            // 화살표 함수를 일반 'function'으로 변경 (ES5 호환성)
+            fsn.imgLoad(imgTag, imgUrl, function(bgColor) {
+                if (bgColor) {
+                    document.body.style.backgroundColor = bgColor;
                 }
-                a += "//image.cauly.co.kr/adtmplt/assets/fsn-lib/fsn_adtmplt_001";
-                var b = document.createElement("link");
-                b.rel = "stylesheet";
-                b.type = "text/css";
-                b.href = a + ".css";
-                document.head.appendChild(b);
-                b = document.createElement("script");
-                b.type = "text/javascript";
-                b.src = a + ".js";
-                b.onload = function() {
-                    new FsnAdtmplt(loadedFunc);
-                };
-                document.head.appendChild(b);
+            });
+        }
+
+        var clkUrl = null;
+        try {
+            clkUrl = fsn.getUrlParam("clk_url", null, null);
+            if (clkUrl) {
+                clkUrl = decodeURI(clkUrl);
             }
-            document.addEventListener("DOMContentLoaded", initFsnAdtmplt);
-        </script>
-    </body>
-</html>
+        } catch (err) {
+            console.error("clk_url 처리 중 오류:", err);
+            clkUrl = null; // 오류 발생 시 null로 초기화
+        }
+
+        if (clkUrl == null || clkUrl == "null") {
+            console.error("clk_url 파라미터는 필수값입니다.");
+        } else {
+            // 화살표 함수를 일반 'function'으로 변경 (ES5 호환성)
+            fsn.addFsnEventListener(container, false, true, function(evt) {
+                return clkUrl;
+            });
+            fsn.xBackgroundClickUrl(clkUrl);
+        }
+    }
+
+    function initFsnAdtmplt() {
+        var protocol = window.location.protocol;
+        if (protocol !== "http:") {
+            protocol = "https:";
+        }
+        var libUrl = protocol + "//image.cauly.co.kr/adtmplt/assets/fsn-lib/fsn_adtmplt_001";
+        
+        var linkElem = document.createElement("link");
+        linkElem.rel = "stylesheet";
+        linkElem.type = "text/css";
+        linkElem.href = libUrl + ".css";
+        document.head.appendChild(linkElem);
+        
+        var scriptElem = document.createElement("script");
+        scriptElem.type = "text/javascript";
+        scriptElem.src = libUrl + ".js";
+        scriptElem.onload = function() {
+            new FsnAdtmplt(loadedFunc);
+        };
+        document.head.appendChild(scriptElem);
+    }
+    
+    document.addEventListener("DOMContentLoaded", initFsnAdtmplt);
+</script>
