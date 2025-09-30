@@ -18,75 +18,74 @@
         </div>
         <script>
             function loadedFunc(fsn) {
-                var container = document.querySelector(".container");
-                var imgTag = document.querySelector(".container>img");
-                var imgUrl = null;
-                try {
-                    var rawImgUrl = fsn.getUrlParam("img_url", null, null);
-                    if (rawImgUrl) {
-                        imgUrl = decodeURIComponent(rawImgUrl);
-                        if (imgUrl.indexOf("http://image.cauly.co.kr/") === 0) {
-                            imgUrl = imgUrl.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
-                        }
-                    }
-                } catch (e) {
-                    console.error("img_url 처리 중 오류:", e);
-                }
-                if (imgUrl == null || imgUrl === "null") {
-                    console.error("img_url 파라미터는 필수값입니다.");
-                } else {
-                    fsn.imgLoad(imgTag, imgUrl, function(bgColor) {
-                        if (bgColor) {
-                            document.body.style.backgroundColor = bgColor;
-                        }
-                    });
-                }
-                var clkUrl = null;
-                try {
-                    var rawClkUrl = fsn.getUrlParam("clk_url", null, null);
-                    if (rawClkUrl) {
-                        clkUrl = decodeURI(rawClkUrl);
-                    }
-                } catch (e) {
-                    console.error("clk_url 처리 중 오류:", e);
-                }
-                if (clkUrl == null || clkUrl === "null") {
-                    console.error("clk_url 파라미터는 필수값입니다.");
-                } else {
-                    fsn.addFsnEventListener(container, false, true, function(evt) {
-                        return clkUrl;
-                    });
-                    fsn.xBackgroundClickUrl(clkUrl);
+        var container = document.querySelector(".container");
+        var imgTag = document.querySelector(".container>img");
+        var imgUrl = null;
+        try {
+            var rawImgUrl = fsn.getUrlParam("img_url", null, null);
+            if (rawImgUrl) {
+                imgUrl = decodeURIComponent(rawImgUrl);
+                if (imgUrl.indexOf("http://image.cauly.co.kr/") === 0) {
+                    imgUrl = imgUrl.replace("http://image.cauly.co.kr/", "https://image.cauly.co.kr/");
                 }
             }
-            function initFsnAdtmplt() {
-                var protocol = window.location.protocol;
-                if (protocol != "http:") {
-                    protocol = "https:";
+        } catch (e) {
+            console.error("img_url 처리 중 오류:", e);
+        }
+        if (imgUrl == null || imgUrl === "null") {
+            console.error("img_url 파라미터는 필수값입니다.");
+        } else {
+            fsn.imgLoad(imgTag, imgUrl, function(bgColor) {
+                if (bgColor) {
+                    document.body.style.backgroundColor = bgColor;
                 }
-                var libUrl = protocol + "//image.cauly.co.kr/adtmplt/assets/fsn-lib/fsn_adtmplt_001";
-                var linkElem = document.createElement("link");
-                linkElem.rel = "stylesheet";
-                linkElem.type = "text/css";
-                linkElem.href = libUrl + ".css";
-                document.head.appendChild(linkElem);
-                var scriptElem = document.createElement("script");
-                scriptElem.type = "text/javascript";
-                scriptElem.src = libUrl + ".js";
-                scriptElem.onload = function() {
-                    if (typeof FsnAdtmplt !== 'undefined') {
-                        new FsnAdtmplt(loadedFunc);
-                    } else {
-                        console.error('FsnAdtmplt 라이브러리를 로드하지 못했습니다.');
-                    }
-                };
-                // --- 중요: 외부 스크립트 로드 실패 시 오류를 콘솔에 출력 ---
-                scriptElem.onerror = function() {
-                    console.error('외부 라이브러리 fsn_adtmplt_001.js 로드 실패! 이 파일의 ES6 문법 호환성을 확인해야 합니다.');
-                };
-                document.head.appendChild(scriptElem);
+            });
+        }
+        var clkUrl = null;
+        try {
+            var rawClkUrl = fsn.getUrlParam("clk_url", null, null);
+            if (rawClkUrl) {
+                clkUrl = decodeURI(rawClkUrl);
             }
-            document.addEventListener("DOMContentLoaded", initFsnAdtmplt);
+        } catch (e) {
+            console.error("clk_url 처리 중 오류:", e);
+        }
+        if (clkUrl == null || clkUrl === "null") {
+            console.error("clk_url 파라미터는 필수값입니다.");
+        } else {
+            fsn.addFsnEventListener(container, false, true, function(evt) {
+                return clkUrl;
+            });
+            fsn.xBackgroundClickUrl(clkUrl);
+        }
+    }
+
+    function initFsnAdtmplt() {
+        // --- 이 부분의 경로가 수정되어야 합니다 ---
+        var libUrl = "./fsn_adtmplt_001"; // 로컬 경로로 수정
+        
+        var linkElem = document.createElement("link");
+        linkElem.rel = "stylesheet";
+        linkElem.type = "text/css";
+        linkElem.href = libUrl + ".css"; // .css 파일도 필요하다면 같은 위치에 있어야 합니다.
+        document.head.appendChild(linkElem);
+
+        var scriptElem = document.createElement("script");
+        scriptElem.type = "text/javascript";
+        scriptElem.src = libUrl + ".js"; // 수정된 js 파일을 불러옵니다.
+        scriptElem.onload = function() {
+            if (typeof FsnAdtmplt !== 'undefined') {
+                new FsnAdtmplt(loadedFunc);
+            } else {
+                console.error('FsnAdtmplt 라이브러리를 로드하지 못했습니다.');
+            }
+        };
+        scriptElem.onerror = function() {
+            console.error('수정된 fsn_adtmplt_001.js 로드 실패!');
+        };
+        document.head.appendChild(scriptElem);
+    }
+    document.addEventListener("DOMContentLoaded", initFsnAdtmplt);
         </script>
     </body>
 </html>
